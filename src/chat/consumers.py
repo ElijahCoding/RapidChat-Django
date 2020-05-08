@@ -46,7 +46,7 @@ class ChatConsumer(AsyncConsumer):
         self.room_group_name = thread_obj.room_group_name # group
 
         await self.channel_layer.group_add(
-            self.room_group_name,
+            self.room_group_name, 
             self.channel_name
         )
         self.rando_user = await self.get_name()
@@ -94,7 +94,7 @@ class ChatConsumer(AsyncConsumer):
         # when the socket connects
         #print(event)
         await self.channel_layer.group_discard(
-            self.room_group_name,
+            self.room_group_name, 
             self.channel_name
         )
 
@@ -110,3 +110,4 @@ class ChatConsumer(AsyncConsumer):
     def create_chat_message(self, user, message):
         thread = self.cfe_chat_thread
         return ChatMessage.objects.create(thread=thread, user=user, message=message)
+

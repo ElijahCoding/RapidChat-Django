@@ -12,7 +12,7 @@ class ThreadManager(models.Manager):
         qs = self.get_queryset().filter(qlookup).exclude(qlookup2).distinct()
         return qs
 
-    def get_or_new(self, user, other_username):  # get_or_create
+    def get_or_new(self, user, other_username): # get_or_create
         username = user.username
         if username == other_username:
             return None
@@ -28,21 +28,21 @@ class ThreadManager(models.Manager):
             user2 = Klass.objects.get(username=other_username)
             if user != user2:
                 obj = self.model(
-                    first=user,
-                    second=user2
-                )
+                        first=user, 
+                        second=user2
+                    )
                 obj.save()
                 return obj, True
             return None, False
 
 
 class Thread(models.Model):
-    first = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chat_thread_first')
-    second = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chat_thread_second')
-    updated = models.DateTimeField(auto_now=True)
-    timestamp = models.DateTimeField(auto_now_add=True)
-
-    objects = ThreadManager()
+    first        = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chat_thread_first')
+    second       = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='chat_thread_second')
+    updated      = models.DateTimeField(auto_now=True)
+    timestamp    = models.DateTimeField(auto_now_add=True)
+    
+    objects      = ThreadManager()
 
     @property
     def room_group_name(self):
@@ -54,24 +54,22 @@ class Thread(models.Model):
             return True
         return False
 
-
-def new_user_receiver(sender, instance, created, *args, **kargs):
+def new_user_receiver(sender, instance, created, *args ,**kargs):
     if created:
         # UserKlass = instance.__class__
         # my_admin_user = UserKlass.objects.get(id=1)
         # obj, created = Thread.objects.get_or_new(my_admin_user, instance.username)
         # obj.broadcast(msg='Hello and welcome')
 
-        sender_id = 1  # admin user, main sender
+        sender_id = 1 # admin user, main sender
         receiver_id = instance.id
         trigger_welcome_message(sender_id, receiver_id)
-
 
 post_save.connect(new_user_receiver, sender=settings.AUTH_USER_MODEL)
 
 
 class ChatMessage(models.Model):
-    thread = models.ForeignKey(Thread, null=True, blank=True, on_delete=models.SET_NULL)
-    user = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='sender', on_delete=models.CASCADE)
-    message = models.TextField()
-    timestamp = models.DateTimeField(auto_now_add=True)
+    thread      = models.ForeignKey(Thread, null=True, blank=True, on_delete=models.SET_NULL)
+    user        = models.ForeignKey(settings.AUTH_USER_MODEL, verbose_name='sender', on_delete=models.CASCADE)
+    message     = models.TextField()
+    timestamp   = models.DateTimeField(auto_now_add=True)
